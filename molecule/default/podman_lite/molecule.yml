@@ -1,0 +1,34 @@
+---
+dependency:
+  name: galaxy
+
+driver:
+  name: podman
+
+platforms:
+  - name: ubuntu
+    image: geerlingguy/docker-ubuntu2204-ansible:latest
+    pre_build_image: true
+    command: /bin/bash -lc "sleep infinity"
+
+  - name: rhel8like
+    image: rockylinux:8
+    pre_build_image: true
+    command: /bin/bash -lc "sleep infinity"
+
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: "${MOLECULE_PROJECT_DIRECTORY}/.."
+    ANSIBLE_REMOTE_TEMP: "/tmp/.ansible/tmp"
+  config_options:
+    defaults:
+      interpreter_python: auto_silent
+      remote_tmp: /tmp/.ansible/tmp
+  playbooks:
+    prepare: prepare.yml
+    converge: converge.yml
+    verify: verify.yml
+
+verifier:
+  name: ansible

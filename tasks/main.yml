@@ -24,8 +24,7 @@
     src: "/tmp/vector.tar.gz"
     dest: "{{ vector_install_dir }}"
     remote_src: true
-    extra_opts: ["--strip-components=1"]
-    creates: "{{ vector_install_dir }}/bin/vector"
+    creates: "{{ vector_install_dir }}/vector-x86_64-unknown-linux-gnu/bin/vector"
 
 - name: Install Vector binary
   ansible.builtin.copy:
@@ -72,6 +71,11 @@
     group: "{{ vector_group }}"
   notify: restart vector
 
+- name: Check if systemd is available
+  ansible.builtin.stat:
+    path: /run/systemd/system
+  register: systemd_runtime  
+
 - name: Deploy systemd unit
   ansible.builtin.template:
     src: "vector.service.j2"
@@ -85,3 +89,4 @@
     state: started
     enabled: true
     daemon_reload: true
+  when: systemd_runtime.stat.exists

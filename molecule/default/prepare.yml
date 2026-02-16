@@ -1,0 +1,27 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: Install newer python on rhel8like (python38)
+      raw: |
+        set -e
+        python3 -c 'import sys; exit(0 if sys.version_info >= (3,7) else 1)' && exit 0
+
+        if command -v dnf >/dev/null 2>&1; then
+          dnf -y install python38 || dnf -y install python39 || dnf -y install python3
+        elif command -v yum >/dev/null 2>&1; then
+          yum -y install python38 || yum -y install python39 || yum -y install python3
+        fi
+      changed_when: false
+      when: inventory_hostname == "rhel8like"
+
+    - name: Set python interpreter for rhel8like
+      ansible.builtin.set_fact:
+        ansible_python_interpreter: /usr/bin/python3.8
+      when: inventory_hostname == "rhel8like"
+
+    - name: Gather facts (after fixing python)
+      ansible.builtin.setup:

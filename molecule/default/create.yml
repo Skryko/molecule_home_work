@@ -1,0 +1,23 @@
+---
+- name: Create
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Create docker containers (no systemd)
+      community.docker.docker_container:
+        name: "{{ item.name }}"
+        image: "{{ item.image }}"
+        privileged: true
+        tty: true
+        command: "{{ item.command }}"
+        state: started
+        recreate: true
+      loop:
+        - name: ubuntu
+          image: geerlingguy/docker-ubuntu2204-ansible:latest
+          command: /bin/bash -lc "sleep infinity"
+
+        - name: rhel8like
+          image: rockylinux:8
+          command: /bin/bash -lc "sleep infinity"

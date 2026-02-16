@@ -1,0 +1,25 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Install python3 using raw via shell
+      ansible.builtin.raw: >
+        /bin/sh -lc '
+        set -e;
+        if command -v apt-get >/dev/null 2>&1; then
+          apt-get update -y;
+          DEBIAN_FRONTEND=noninteractive apt-get install -y python3 python3-apt ca-certificates curl;
+        elif command -v dnf >/dev/null 2>&1; then
+          dnf -y install python3 ca-certificates curl;
+        elif command -v yum >/dev/null 2>&1; then
+          yum -y install python3 ca-certificates curl;
+        else
+          echo "No supported package manager found" >&2; exit 1;
+        fi
+        '
+      changed_when: false
+
+    - name: Gather facts (after python install)
+      ansible.builtin.setup:
