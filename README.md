@@ -14,5 +14,12 @@
 
 	
 	•	Molecule test проходит полностью: create → prepare → converge → idempotence → verify → destroy.
+![photo](molecule_complete.png)
+
+![photo](tox_complete.png)
+
+![photo](test_create.png)
+
+![photo](click.png)
 
 
